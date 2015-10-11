@@ -1,1 +1,97 @@
-yo
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Chicken Door</title>
+<style>
+.closed{
+  background: green;
+  color: white;
+}
+.open{
+  background: yellow;
+  color: black;
+}
+.jumbotron {
+  text-transform: uppercase;
+  font-family:arial;
+  font-size:13em;
+  position: absolute;
+  top: 50%;
+  left:50%;
+  transform: translate(-50%,-50%);
+}
+</style>
+
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script>
+$(init);
+
+var debug = true;
+var status;
+var new_status;
+var $jumbotron;
+var $body;
+
+function init(){
+  var debug = true;
+  var status;
+  var new_status;
+  $jumbotron = $('.jumbotron');
+  $body = $('body');
+
+  updateStatus();
+  setInterval(updateStatus,10000);
+}
+
+function updateStatus(){
+  dd('UPDATING STATUS');
+  var door_stream = 'http://data.sparkfun.com/output/OGzpoQN9bAir9gEj5NDE.json?page=1';
+    $.getJSON(door_stream)
+      .done(function(data){
+        new_status = parseInt(data[0].door_closed) ? 'closed' : 'open';
+        dd('got new status: ' + new_status);
+        if(new_status !== status){
+          dd(data);
+          status = new_status;
+          updatePage(new_status);
+        }
+      })
+      .fail(function(){
+        status = 'err';
+        setBodyClass(status);
+        $jumbotron
+          .text('ERR :(');
+      });
+}
+
+function updatePage(status){
+dd('new: ' + status);
+  $jumbotron
+    .text(status);
+  setBodyClass(status);
+}
+
+function setBodyClass(c){
+  $body
+    .removeClass('closed')
+    .removeClass('open')
+    .removeClass('err')
+    .addClass(status);
+}
+
+function dd(msg){
+  if(debug){
+    console.log(msg);
+  }
+}
+
+</script>
+</head>
+
+<body>
+
+<div class='jumbotron'>plz wait ...</div>
+
+</body>
+</html>
