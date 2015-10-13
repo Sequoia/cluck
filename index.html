@@ -41,7 +41,6 @@ function init(){
   $body = $('body');
 
   updateStatus();
-  setInterval(updateStatus,10000);
 }
 
 function updateStatus(){
@@ -62,6 +61,9 @@ function updateStatus(){
         setBodyClass(status);
         $jumbotron
           .text('ERR :(');
+      })
+      .always(function(){
+        setTimeout(updateStatus, 1000);
       });
 }
 
